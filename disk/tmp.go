@@ -6,9 +6,8 @@ type tmpDisk struct {
 	*FilesystemDisk
 }
 
-func (*tmpDisk) Close() error {
-	// TODO: delete rootdirectory
-	return nil
+func (d *tmpDisk) Close() error {
+	return os.RemoveAll(d.rootDirectory)
 }
 
 func NewTmpDisk() *tmpDisk {
