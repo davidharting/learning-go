@@ -2,10 +2,16 @@ package disk
 
 import "fmt"
 
-// TODO: Create DiskReader, DiskWriter, and DiskWalker interfaces
-
 type Disk interface {
+	DiskReader
+	DiskWriter
+}
+
+type DiskReader interface {
 	get(string) (string, *DiskGetError)
+}
+
+type DiskWriter interface {
 	put(string, string) error
 }
 

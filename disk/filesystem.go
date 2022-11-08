@@ -12,7 +12,7 @@ type FilesystemDisk struct {
 
 func (f *FilesystemDisk) get(path string) (string, *DiskGetError) {
 	fullPath := getFullPath(f, path)
-	content, err := os.ReadFile(fullPath) // Todo: Concat path with root directory
+	content, err := os.ReadFile(fullPath)
 
 	if os.IsPermission(err) {
 		return "", &DiskGetError{path: path, code: NotPermitted}
