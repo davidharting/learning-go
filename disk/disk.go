@@ -8,7 +8,7 @@ type Disk interface {
 }
 
 type DiskReader interface {
-	get(string) (string, *DiskGetError)
+	get(string) (string, DiskGetError)
 }
 
 type DiskWriter interface {
@@ -28,6 +28,10 @@ type DiskGetError struct {
 	path string
 }
 
-func (e DiskGetError) Error() string {
+func (e *DiskGetError) Error() string {
 	return fmt.Sprintf("Unable to read file %v, due to error code %v", e.path, e.code)
+}
+
+func (e *DiskGetError) String() string {
+	return e.Error()
 }

@@ -26,3 +26,20 @@ func TestClosingDeletesTmpDir(t *testing.T) {
 	_, err = os.ReadDir(disk.rootDirectory)
 	assert.Error(t, err)
 }
+
+func TestPutCreatesFile(t *testing.T) {
+	disk := NewTmpDisk()
+	defer disk.Close()
+
+	_, err := disk.get("path/abc.txt")
+	assert.Error(t, err, "File should not exist yet.")
+
+	putErr := disk.put("path/abc.txt", "hello")
+	assert.NoError(t, putErr, "Unable to put file")
+
+	got, secondGetErr := disk.get("path/abc.txt")
+	assert.Nil(t, secondGetErr, "Got an error retrieving file contents after putting them")
+	assert.Equal(t, "hello", got)
+}
+
+func TestPutUpdatesFile(t *testing.T) {}

@@ -17,6 +17,7 @@ func MostRecentCommit() (string, error) {
 
 type repo struct {
 	libgitRepo *libgit.Repository
+	path       string
 }
 
 func NewRepo(path string) (Repo, error) {
@@ -25,12 +26,13 @@ func NewRepo(path string) (Repo, error) {
 		return nil, err
 	}
 
-	return &repo{libgitRepo: libgitRepo}, nil
+	return &repo{libgitRepo: libgitRepo, path: path}, nil
 }
 
 type Repo interface {
 	CurrentBranch() (string, error)
 	LatestCommit() (string, error)
+	GetPath() string
 }
 
 func (r *repo) CurrentBranch() (string, error) {
@@ -48,4 +50,8 @@ func (r *repo) LatestCommit() (string, error) {
 	oid := annotatedCommit.Id()
 	commit, _ := r.libgitRepo.LookupCommit(oid)
 	return commit.Message(), nil
+}
+
+func (r *repo) GetPath() string {
+	return r.path
 }
