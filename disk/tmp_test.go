@@ -8,7 +8,7 @@ import (
 )
 
 func TestTmpDiskGetMissingFile(t *testing.T) {
-	disk := NewTmpDisk()
+	disk := NewTmp()
 	defer disk.Close()
 
 	contents, err := disk.get("path/to/missing/file")
@@ -18,7 +18,7 @@ func TestTmpDiskGetMissingFile(t *testing.T) {
 }
 
 func TestClosingDeletesTmpDir(t *testing.T) {
-	disk := NewTmpDisk()
+	disk := NewTmp()
 	_, err := os.ReadDir(disk.rootDirectory)
 	assert.NoError(t, err)
 
@@ -28,7 +28,7 @@ func TestClosingDeletesTmpDir(t *testing.T) {
 }
 
 func TestPutCreatesFile(t *testing.T) {
-	disk := NewTmpDisk()
+	disk := NewTmp()
 	defer disk.Close()
 
 	_, err := disk.get("path/abc.txt")
