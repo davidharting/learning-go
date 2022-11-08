@@ -27,10 +27,6 @@ func (f *FilesystemDisk) get(path string) (string, *DiskGetError) {
 	return bytes.NewBuffer(content).String(), nil
 }
 
-// func (f *FilesystemDisk) put(path string) error {
-// 	return nil
-// }
-
 func getFullPath(f *FilesystemDisk, relativePath string) string {
 	return filepath.Join(f.rootDirectory, relativePath)
 }
