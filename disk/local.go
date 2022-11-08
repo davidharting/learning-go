@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 )
 
-type FilesystemDisk struct {
+type Local struct {
 	rootDirectory string
 }
 
-func (f *FilesystemDisk) get(path string) (string, *DiskGetError) {
+func (f *Local) get(path string) (string, *DiskGetError) {
 	fullPath := getFullPath(f, path)
 	content, err := os.ReadFile(fullPath)
 
@@ -28,11 +28,11 @@ func (f *FilesystemDisk) get(path string) (string, *DiskGetError) {
 	return bytes.NewBuffer(content).String(), nil
 }
 
-func getFullPath(f *FilesystemDisk, relativePath string) string {
+func getFullPath(f *Local, relativePath string) string {
 	return filepath.Join(f.rootDirectory, relativePath)
 }
 
-func (f *FilesystemDisk) put(path string, contents string) error {
+func (f *Local) put(path string, contents string) error {
 	fullPath := getFullPath(f, path)
 
 	// TODO: What modes to use?
