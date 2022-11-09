@@ -40,3 +40,30 @@ func (f *Local) put(path string, contents string) error {
 	err := os.WriteFile(fullPath, bytes.NewBufferString(contents).Bytes(), fs.ModePerm)
 	return err
 }
+
+func (f *Local) listAll() []file {
+	files := make([]file, 0)
+
+	filepath.WalkDir(f.rootDirectory, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
+
+		info, err := d.Info()
+
+		if err != nil {
+			return nil
+		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		relativePath, _ := filepath.Rel(f.rootDirectory, path)
+
+		files = append(files, file{relativePath: relativePath, sizeInBytes: info.Size()})
+		return nil
+	})
+
+	return files
+}

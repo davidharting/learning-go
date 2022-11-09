@@ -11,10 +11,6 @@ type DiskReader interface {
 	get(string) (string, DiskGetError)
 }
 
-type DiskWriter interface {
-	put(string, string) error
-}
-
 type DiskGetErrorCode string
 
 const (
@@ -34,4 +30,18 @@ func (e *DiskGetError) Error() string {
 
 func (e *DiskGetError) String() string {
 	return e.Error()
+}
+
+type DiskWriter interface {
+	put(string, string) error
+}
+
+type DiskLister interface {
+	listAll() []file
+	// list - but take a depth and a starting subdirectory
+}
+
+type file struct {
+	relativePath string
+	sizeInBytes  int64
 }

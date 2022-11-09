@@ -33,3 +33,6 @@ func setupTestGitRepo(t *testing.T) (Repo, func()) {
 
 // If I can't clone from a bundle, why not init and copy in files!
 // Then I have full control too over what files to initialize with
+// Actually, just exec out to clone from bundle would work as well
+// That does seem easier to creating git history every time I want to test git history?
+// But setting up the scenario also seems important.
