@@ -2,37 +2,61 @@ package git
 
 import (
 	"os"
+	"os/exec"
+	"path/filepath"
 	"testing"
 
-	libgit "github.com/libgit2/git2go/v34"
+	"github.com/davidharting/learngo/disk"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
-func TestOpenRepository(t *testing.T) {
-	_, teardown := setupTestGitRepo(t)
-	defer teardown()
+type readOnlySuite struct {
+	suite.Suite
+	repo     *Repo
+	teardown func() error
 }
 
-// It will be much easier to do debug the setup here if I have more capability on Filesystem.
-// Specifically, I want to list the directory and I want a PutMultiple method
-func setupTestGitRepo(t *testing.T) (Repo, func()) {
-	tmp, err := os.MkdirTemp("/tmp", "git_test_")
-	assert.NoError(t, err, "Unable to create temporary directory")
+func (s *readOnlySuite) SetupSuite() {
+	repo, teardown := setupTestGitRepo(s.T())
+	s.repo = &repo
+	s.teardown = teardown
+}
 
-	_, err = libgit.InitRepository(tmp, true)
-	assert.NoError(t, err, "Unable to initialize repo into tmp folder (%v)\n", tmp)
+func (s *readOnlySuite) TearDownSuite() {
+	err := s.teardown()
+	assert.NoError(s.T(), err)
+}
 
-	repo, err := NewRepo(tmp)
-	assert.NoError(t, err, "Unable to create test Repo for tmp folder (%v)\n", tmp)
+func TestReadOnlySuite(t *testing.T) {
+	suite.Run(t, new(readOnlySuite))
+}
 
-	teardownTestGitRepo := func() {
-		os.RemoveAll(tmp)
+func (s *readOnlySuite) TestOpenRepository() {
+	// If this runs at all we good
+	assert.True(s.T(), true)
+}
+
+func setupTestGitRepo(t *testing.T) (Repo, func() error) {
+	tmp := disk.NewTmp()
+
+	cloneCmd := exec.Command("git", "clone", getGitBundleAbsPath(t), ".")
+	cloneCmd.Dir = tmp.RootDirectory
+	err := cloneCmd.Run()
+	assert.NoErrorf(t, err, "Unable to clone from bundle into tmp directory %v", tmp.RootDirectory)
+
+	repo, err := NewRepo(tmp.RootDirectory)
+	assert.NoError(t, err, "Unable to create test Repo for tmp folder (%v)\n", tmp.RootDirectory)
+
+	teardownTestGitRepo := func() error {
+		return tmp.Close()
 	}
+
 	return repo, teardownTestGitRepo
 }
 
-// If I can't clone from a bundle, why not init and copy in files!
-// Then I have full control too over what files to initialize with
-// Actually, just exec out to clone from bundle would work as well
-// That does seem easier to creating git history every time I want to test git history?
-// But setting up the scenario also seems important.
+func getGitBundleAbsPath(t *testing.T) string {
+	workDir, err := os.Getwd()
+	assert.NoError(t, err)
+	return filepath.Join(workDir, "testdata/jaffle_shop_metrics_bundle.pack")
+}

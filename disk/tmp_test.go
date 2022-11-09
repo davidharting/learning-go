@@ -20,11 +20,11 @@ func TestTmpDiskGetMissingFile(t *testing.T) {
 
 func TestClosingDeletesTmpDir(t *testing.T) {
 	disk := NewTmp()
-	_, err := os.ReadDir(disk.rootDirectory)
+	_, err := os.ReadDir(disk.RootDirectory)
 	assert.NoError(t, err)
 
 	disk.Close()
-	_, err = os.ReadDir(disk.rootDirectory)
+	_, err = os.ReadDir(disk.RootDirectory)
 	assert.Error(t, err)
 }
 
@@ -73,7 +73,7 @@ func (s *ListAllSuite) TestEmptyDirectoryReturnsEmptyList() {
 	disk := NewTmp()
 	defer disk.Close()
 
-	assert.Empty(s.T(), disk.listAll())
+	assert.Empty(s.T(), disk.ListAll())
 }
 
 func (s *ListAllSuite) TestListsFilesInDirectoryRecursively() {
@@ -84,7 +84,7 @@ func (s *ListAllSuite) TestListsFilesInDirectoryRecursively() {
 	disk.put("/one/two/def.txt", "1234")
 	disk.put("/one/two/ghi.txt", "cool")
 
-	files := disk.listAll()
+	files := disk.ListAll()
 
 	assert.Len(s.T(), files, 3, "Got the wrong number of files back.")
 

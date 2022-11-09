@@ -21,7 +21,7 @@ type repo struct {
 }
 
 func NewRepo(path string) (Repo, error) {
-	libgitRepo, err := libgit.OpenRepository(".")
+	libgitRepo, err := libgit.OpenRepository(path)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 type Local struct {
-	rootDirectory string
+	RootDirectory string
 }
 
 func (f *Local) get(path string) (string, *DiskGetError) {
@@ -29,7 +29,7 @@ func (f *Local) get(path string) (string, *DiskGetError) {
 }
 
 func getFullPath(f *Local, relativePath string) string {
-	return filepath.Join(f.rootDirectory, relativePath)
+	return filepath.Join(f.RootDirectory, relativePath)
 }
 
 func (f *Local) put(path string, contents string) error {
@@ -41,10 +41,10 @@ func (f *Local) put(path string, contents string) error {
 	return err
 }
 
-func (f *Local) listAll() []file {
+func (f *Local) ListAll() []file {
 	files := make([]file, 0)
 
-	filepath.WalkDir(f.rootDirectory, func(path string, d fs.DirEntry, err error) error {
+	filepath.WalkDir(f.RootDirectory, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return nil
 		}
@@ -59,7 +59,7 @@ func (f *Local) listAll() []file {
 			return nil
 		}
 
-		relativePath, _ := filepath.Rel(f.rootDirectory, path)
+		relativePath, _ := filepath.Rel(f.RootDirectory, path)
 
 		files = append(files, file{relativePath: relativePath, sizeInBytes: info.Size()})
 		return nil

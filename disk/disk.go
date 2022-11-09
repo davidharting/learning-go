@@ -8,7 +8,7 @@ type Disk interface {
 }
 
 type DiskReader interface {
-	get(string) (string, DiskGetError)
+	et(string) (string, DiskGetError)
 }
 
 type DiskGetErrorCode string
@@ -37,7 +37,7 @@ type DiskWriter interface {
 }
 
 type DiskLister interface {
-	listAll() []file
+	ListAll() []file
 	// list - but take a depth and a starting subdirectory
 }
 
