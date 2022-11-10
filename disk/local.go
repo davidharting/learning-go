@@ -7,11 +7,15 @@ import (
 	"path/filepath"
 )
 
-type Local struct {
+type local struct {
 	RootDirectory string
 }
 
-func (f *Local) get(path string) (string, *DiskGetError) {
+func NewLocal(rootDirectory string) *local {
+	return &local{RootDirectory: rootDirectory}
+}
+
+func (f *local) get(path string) (string, *DiskGetError) {
 	fullPath := getFullPath(f, path)
 	content, err := os.ReadFile(fullPath)
 
@@ -28,11 +32,11 @@ func (f *Local) get(path string) (string, *DiskGetError) {
 	return bytes.NewBuffer(content).String(), nil
 }
 
-func getFullPath(f *Local, relativePath string) string {
+func getFullPath(f *local, relativePath string) string {
 	return filepath.Join(f.RootDirectory, relativePath)
 }
 
-func (l *Local) put(path string, contents string) error {
+func (l *local) put(path string, contents string) error {
 	fullPath := getFullPath(l, path)
 
 	// TODO: What modes to use?
@@ -41,7 +45,7 @@ func (l *Local) put(path string, contents string) error {
 	return err
 }
 
-func (l *Local) putMany(files []file) []filePutError {
+func (l *local) putMany(files []file) []filePutError {
 	errors := make([]filePutError, 0)
 
 	for _, file := range files {
@@ -54,8 +58,8 @@ func (l *Local) putMany(files []file) []filePutError {
 	return errors
 }
 
-func (f *Local) ListAll() []fileInfo {
-	files := make([]fileInfo, 0)
+func (f *local) ListAll() []FileInfo {
+	files := make([]FileInfo, 0)
 
 	filepath.WalkDir(f.RootDirectory, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -74,7 +78,7 @@ func (f *Local) ListAll() []fileInfo {
 
 		relativePath, _ := filepath.Rel(f.RootDirectory, path)
 
-		files = append(files, fileInfo{relativePath: relativePath, sizeInBytes: info.Size()})
+		files = append(files, FileInfo{RelativePath: relativePath, SizeInBytes: info.Size()})
 		return nil
 	})
 

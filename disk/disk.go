@@ -52,11 +52,11 @@ func (e *filePutError) Error() string {
 }
 
 type DiskLister interface {
-	ListAll() []fileInfo
+	ListAll() []FileInfo
 	// list - but take a depth and a starting subdirectory
 }
 
-type fileInfo struct {
-	relativePath string
-	sizeInBytes  int64
+type FileInfo struct {
+	RelativePath string
+	SizeInBytes  int64
 }
