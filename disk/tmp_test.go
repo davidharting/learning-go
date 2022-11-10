@@ -97,3 +97,36 @@ func (s *ListAllSuite) TestListsFilesInDirectoryRecursively() {
 
 	assert.Equal(s.T(), expectedPaths, gotPaths)
 }
+
+func TestPutManyWorksWithEmptySlice(t *testing.T) {
+	disk := NewTmp()
+	defer disk.Close()
+
+	errors := disk.putMany(make([]file, 0))
+	assert.Empty(t, errors)
+}
+
+func TestPutMany(t *testing.T) {
+	disk := NewTmp()
+	defer disk.Close()
+
+	files := [3]file{
+		{relativePath: "models/staging/stg_customers.sql", contents: "select 1"},
+		{relativePath: "readme.md", contents: "# Project"},
+		{relativePath: "models/customers.sql", contents: "select 2"},
+	}
+
+	errors := disk.putMany(files[0:3])
+	assert.Empty(t, errors)
+
+	list := disk.ListAll()
+	assert.Len(t, list, 3)
+
+	paths := make([]string, 0)
+	for _, fileInfo := range list {
+		paths = append(paths, fileInfo.relativePath)
+	}
+	assert.Contains(t, paths, "models/staging/stg_customers.sql")
+	assert.Contains(t, paths, "readme.md")
+	assert.Contains(t, paths, "models/customers.sql")
+}

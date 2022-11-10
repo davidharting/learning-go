@@ -34,14 +34,29 @@ func (e *DiskGetError) String() string {
 
 type DiskWriter interface {
 	put(string, string) error
-}
-
-type DiskLister interface {
-	ListAll() []file
-	// list - but take a depth and a starting subdirectory
+	putMany([]file) []filePutError
 }
 
 type file struct {
+	relativePath string
+	contents     string
+}
+
+type filePutError struct {
+	relativePath  string
+	originalErorr error
+}
+
+func (e *filePutError) Error() string {
+	return fmt.Sprintf("Error putting file %v: %v", e.relativePath, e.originalErorr.Error())
+}
+
+type DiskLister interface {
+	ListAll() []fileInfo
+	// list - but take a depth and a starting subdirectory
+}
+
+type fileInfo struct {
 	relativePath string
 	sizeInBytes  int64
 }

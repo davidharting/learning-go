@@ -32,8 +32,8 @@ func getFullPath(f *Local, relativePath string) string {
 	return filepath.Join(f.RootDirectory, relativePath)
 }
 
-func (f *Local) put(path string, contents string) error {
-	fullPath := getFullPath(f, path)
+func (l *Local) put(path string, contents string) error {
+	fullPath := getFullPath(l, path)
 
 	// TODO: What modes to use?
 	os.MkdirAll(filepath.Dir(fullPath), os.ModePerm)
@@ -41,8 +41,21 @@ func (f *Local) put(path string, contents string) error {
 	return err
 }
 
-func (f *Local) ListAll() []file {
-	files := make([]file, 0)
+func (l *Local) putMany(files []file) []filePutError {
+	errors := make([]filePutError, 0)
+
+	for _, file := range files {
+		err := l.put(file.relativePath, file.contents)
+		if err != nil {
+			errors = append(errors, filePutError{relativePath: file.relativePath, originalErorr: err})
+		}
+	}
+
+	return errors
+}
+
+func (f *Local) ListAll() []fileInfo {
+	files := make([]fileInfo, 0)
 
 	filepath.WalkDir(f.RootDirectory, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -61,7 +74,7 @@ func (f *Local) ListAll() []file {
 
 		relativePath, _ := filepath.Rel(f.RootDirectory, path)
 
-		files = append(files, file{relativePath: relativePath, sizeInBytes: info.Size()})
+		files = append(files, fileInfo{relativePath: relativePath, sizeInBytes: info.Size()})
 		return nil
 	})
 
