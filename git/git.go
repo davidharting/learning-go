@@ -2,6 +2,8 @@ package git
 
 // Note this package requires libgit2 to be installed on the system. I wish it was packaged in!
 import (
+	"fmt"
+
 	libgit "github.com/libgit2/git2go/v34"
 )
 
@@ -20,7 +22,7 @@ type repo struct {
 	path       string
 }
 
-func NewRepo(path string) (Repo, error) {
+func NewRepo(path string) (*repo, error) {
 	libgitRepo, err := libgit.OpenRepository(path)
 	if err != nil {
 		return nil, err
@@ -31,7 +33,7 @@ func NewRepo(path string) (Repo, error) {
 
 type Repo interface {
 	CurrentBranch() (string, error)
-	LatestCommit() (string, error)
+	LatestCommit() (*commit, error)
 	GetPath() string
 }
 
@@ -40,16 +42,34 @@ func (r *repo) CurrentBranch() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return head.Name(), nil
+	branch, err := head.Branch().Name()
+	if err != nil {
+		return "", err
+	}
+
+	return branch, nil
 }
 
-func (r *repo) LatestCommit() (string, error) {
+type commit struct {
+	Author  string
+	Message string
+}
+
+// Get the latest commit on the current branch
+func (r *repo) LatestCommit() (*commit, error) {
 	head, _ := r.libgitRepo.Head()
 	ref, _ := head.Resolve()
 	annotatedCommit, _ := r.libgitRepo.AnnotatedCommitFromRef(ref)
 	oid := annotatedCommit.Id()
-	commit, _ := r.libgitRepo.LookupCommit(oid)
-	return commit.Message(), nil
+	c, err := r.libgitRepo.LookupCommit(oid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	com := &commit{Author: fmt.Sprintf("%v <%v>", c.Author().Name, c.Author().Email), Message: c.Message()}
+
+	return com, nil
 }
 
 func (r *repo) GetPath() string {

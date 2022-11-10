@@ -13,13 +13,13 @@ import (
 
 type readOnlySuite struct {
 	suite.Suite
-	repo     *Repo
+	repo     Repo
 	teardown func() error
 }
 
 func (s *readOnlySuite) SetupSuite() {
 	repo, teardown := setupTestGitRepo(s.T())
-	s.repo = &repo
+	s.repo = repo
 	s.teardown = teardown
 }
 
@@ -32,9 +32,21 @@ func TestReadOnlySuite(t *testing.T) {
 	suite.Run(t, new(readOnlySuite))
 }
 
-func (s *readOnlySuite) TestOpenRepository() {
-	// If this runs at all we good
+func (s *readOnlySuite) TestSuiteHooks() {
 	assert.True(s.T(), true)
+}
+
+func (s *readOnlySuite) TestListCurrentBranch() {
+	branch, err := s.repo.CurrentBranch()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), "main", branch)
+}
+
+func (s *readOnlySuite) TestLatestCommit() {
+	commit, err := s.repo.LatestCommit()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), "delete git ignore\n", commit.Message)
+	assert.Equal(s.T(), "David Harting <david.harting@hey.com>", commit.Author)
 }
 
 func setupTestGitRepo(t *testing.T) (Repo, func() error) {
