@@ -14,5 +14,5 @@ func main() {
 	fmt.Printf("Current branch: %v\n", branch)
 
 	msg, _ := repo.LatestCommit()
-	fmt.Printf("Latest commit message: %v\n", msg)
+	fmt.Printf("\nLatest commit message:\n%v\nAuthor: %v\n", msg.Message, msg.Author)
 }
