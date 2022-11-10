@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	greetv1 "github.com/davidharting/learngo/gen/greet/v1"
-	"github.com/davidharting/learngo/gen/greet/v1/greetv1connect"
+	greetv1 "github.com/davidharting/learngo/gen/protos/greet/v1"
+	"github.com/davidharting/learngo/gen/protos/greet/v1/greetv1connect"
 
 	"github.com/bufbuild/connect-go"
 )
