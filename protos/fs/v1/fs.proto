@@ -10,7 +10,7 @@ service FsService {
 
 
 message ListFilesRequest {
-  string rootDirectory = 1;
+  string rootDirectory = 1; // TODO: Rename to relativePath or directory or something or maybe fromDirectory
   int64 depth = 2;
 }
 

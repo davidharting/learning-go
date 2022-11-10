@@ -92,7 +92,7 @@ func (s *ListAllSuite) TestListsFilesInDirectoryRecursively() {
 	gotPaths := make([]string, 0)
 
 	for _, f := range files {
-		gotPaths = append(gotPaths, f.relativePath)
+		gotPaths = append(gotPaths, f.RelativePath)
 	}
 
 	assert.Equal(s.T(), expectedPaths, gotPaths)
@@ -124,7 +124,7 @@ func TestPutMany(t *testing.T) {
 
 	paths := make([]string, 0)
 	for _, fileInfo := range list {
-		paths = append(paths, fileInfo.relativePath)
+		paths = append(paths, fileInfo.RelativePath)
 	}
 	assert.Contains(t, paths, "models/staging/stg_customers.sql")
 	assert.Contains(t, paths, "readme.md")
